@@ -1,3 +1,4 @@
+import argparse
 import csv
 import datetime
 import os
@@ -5,25 +6,23 @@ import os
 
 class Reading:
 
-    def __init__ (self, min_temp, max_temp, date, max_humidity, avg_mean_humidity):
+    def __init__ (self, min_temp, max_temp, date, max_humidity, mean_temp, mean_humidity):
         self.min_temp = min_temp
         self.max_temp = max_temp
         self.date = date
         self.max_humidity = max_humidity
-        self.avg_mean_humidity = avg_mean_humidity
+        self.mean_temp = mean_temp
+        self.mean_humidity = mean_humidity
 
     def __str__(self):
-        return "Date: {}, Min Temp: {}, Max Temp: {}, Max Humidity: {}, Avg Mean Humidity: {}".format(self.date, self.min_temp, self.max_temp, self.max_humidity, self.avg_mean_humidity )
+        return "Date: {}, Min Temp: {}, Max Temp: {}, Max Humidity: {}, Mean Temp: {}, Mean Humidity: {}".format(
+            self.date, self.min_temp, self.max_temp, self.max_humidity, self.mean_temp, self.mean_humidity )
 
 
 class Result:
     def __init__(self, value, date):
         self.value = value
         self.date = date
-
-class Month_result:
-    def __init__(self, value):
-        self.value = value
 
 
 class FileHandler:
@@ -34,7 +33,7 @@ class FileHandler:
         with open(self.dir_path + file_name, 'r') as csv_file:
             csv_reader = csv.DictReader(csv_file, delimiter=',')
             for row in csv_reader:
-                reading = Reading(row['Min TemperatureC'], row['Max TemperatureC'], row['PKT'], row['Max Humidity'],  row['Mean Humidity'])
+                reading = Reading(row['Min TemperatureC'], row['Max TemperatureC'], row['PKT'], row['Max Humidity'], row['Mean TemperatureC'], row[' Mean Humidity'])
                 readings.append(reading)
 
     def get_yearly_data(self, year):
@@ -53,23 +52,21 @@ class FileHandler:
 
         return readings
 
-    def get_monthly_data(self,year,month):
+    def get_monthly_data(self, year, month):
         file_names = os.listdir(self.dir_path)
+        datetime_obj = datetime.datetime.strptime(str(month), "%m")
+        month_name = datetime_obj.strftime("%b")
 
-        chosen_filenames = []
+        chosen_filename = None
         year = str(year)
-        month = str(month)
         for file_name in file_names:
-            if year in file_name:
-                if month in file_name:
-                    chosen_filenames.append(file_name)
+            if year in file_name and month_name in file_name:
+                chosen_filename = file_name
 
         readings = []
-
-        for chosen_filename in chosen_filenames:
-            self.read_data(chosen_filename, readings)
-
+        self.read_data(chosen_filename, readings)
         return readings
+
 
 def get_max_temp(readings):
     result = Result(float('-inf'), None)
@@ -108,13 +105,34 @@ def convert_date(date):
     return datetime.datetime.strptime(date, "%Y-%m-%d").date()
 
 
-def get_avg_highest_temp(readings):
-    result = Month_result(float('inf'))
+def get_highest_avg_temp(readings):
+    highest_avg_temp = float('-inf')
     for reading in readings:
-        if reading.max_temp.isdigit():
-            avg_highest_temp = sum(reading.max_temp) / len (reading.max_temp)
-            result.value = avg_highest_temp
-    return result
+        if reading.mean_temp.isdigit():
+            current_value = int(reading.mean_temp)
+            if current_value > highest_avg_temp:
+                highest_avg_temp = current_value
+    return highest_avg_temp
+
+
+def get_lowest_avg_temp(readings):
+    lowest_avg_temp = float('inf')
+    for reading in readings:
+        if reading.mean_temp.isdigit():
+            current_value = int(reading.mean_temp)
+            if current_value < lowest_avg_temp:
+                lowest_avg_temp = current_value
+    return lowest_avg_temp
+
+
+def get_avg_mean_humidity(readings):
+    humidity_sum = 0
+    count = 0
+    for reading in readings:
+        if reading.mean_humidity.isdigit():
+           humidity_sum = int(reading.mean_humidity) + humidity_sum
+           count = 1 + count
+    return humidity_sum/count
 
 
 def print_yearly_output(year):
@@ -141,14 +159,28 @@ def print_monthly_output(year, month):
     file_handler = FileHandler()
     monthly_data = file_handler.get_monthly_data(year, month)
 
-    avg_highest_temp_result = get_avg_highest_temp (monthly_data)
-    print(avg_highest_temp_result)
+    avg_highest_temp_result = get_highest_avg_temp(monthly_data)
+
+    print("Highest Average: {}C".format(avg_highest_temp_result))
+
+    print("Lowest Average: {}C".format(get_lowest_avg_temp(monthly_data)))
+
+    print("Average Mean Humidity: {}%".format(get_avg_mean_humidity(monthly_data)))
+
+
 
 
 def main():
     # print_yearly_output(2004)
-    print_monthly_output(2005, 6)
+    # print_monthly_output(2005, 8)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("format", help="yearly or monthly format of data")
+    parser.add_argument("date", help="date")
 
+    args = parser.parse_args()
+
+    print(args.format)
+    print(args.date)
 
 
 if __name__ == '__main__':
