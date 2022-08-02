@@ -2,6 +2,7 @@ import argparse
 import csv
 import datetime
 import os
+from termcolor import colored
 
 
 class Reading:
@@ -168,19 +169,60 @@ def print_monthly_output(year, month):
     print("Average Mean Humidity: {}%".format(get_avg_mean_humidity(monthly_data)))
 
 
+def print_bar_chart(year, month):
+    file_handler = FileHandler()
+    monthly_data = file_handler.get_monthly_data(year, month)
+
+    count = 0
+    for reading in monthly_data:
+        count = 1 + count
+        print(count, ' ', end='')
+        if reading.max_temp.isdigit():
+            current_value = int(reading.max_temp)
+
+            print(colored("+" *current_value), ' ', end='')
+            print("{}C ".format(current_value))
+        else:
+            print('')
+
+    return current_value
+
+
+
 
 
 def main():
     # print_yearly_output(2004)
     # print_monthly_output(2005, 8)
     parser = argparse.ArgumentParser()
-    parser.add_argument("format", help="yearly or monthly format of data")
-    parser.add_argument("date", help="date")
-
+    parser.add_argument('-e', '--yearly', type=str, help='Yearly format')
+    parser.add_argument('-a', '--monthly', type=str, help='Monthly format')
+    parser.add_argument('-c', '--barchart', type=str, help='Bar format')
     args = parser.parse_args()
 
-    print(args.format)
-    print(args.date)
+
+    if args.yearly:
+        try:
+            datetime_object = datetime.datetime.strptime(args.yearly, "%Y")
+        except ValueError:
+            print('Date format is not valid')
+        else:
+            print_yearly_output(datetime_object.year)
+    elif args.monthly:
+        try:
+            datetime_object = datetime.datetime.strptime(args.monthly, "%Y/%m")
+        except ValueError:
+            print('Date format is not valid')
+        else:
+            print_monthly_output(datetime_object.year, datetime_object.month)
+    elif args.barchart:
+        try:
+            datetime_object = datetime.datetime.strptime(args.barchart, "%Y/%m")
+        except ValueError:
+            print('Date format is not valid')
+        else:
+            print_bar_chart(datetime_object.year, datetime_object.month)
+
 
 
 if __name__ == '__main__':
