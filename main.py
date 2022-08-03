@@ -179,16 +179,20 @@ def print_bar_chart(year, month):
         print(count, ' ', end='')
         if reading.max_temp.isdigit():
             current_value = int(reading.max_temp)
+        if reading.min_temp.isdigit():
+            min_value = int(reading.min_temp)
 
             print(colored("+" *current_value), ' ', end='')
             print("{}C ".format(current_value))
+            print(count, ' ', end='')
+            print(colored("+" * min_value), ' ', end='')
+            print("{}C ".format(min_value))
+
         else:
             print('')
 
     return current_value
-
-
-
+    return min_temp
 
 
 def main():
