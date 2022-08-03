@@ -172,20 +172,23 @@ def print_monthly_output(year, month):
 def print_bar_chart(year, month):
     file_handler = FileHandler()
     monthly_data = file_handler.get_monthly_data(year, month)
+    datetime_obj = datetime.datetime.strptime(str(month), "%m")
+    month_name = datetime_obj.strftime("%B")
+    print(month_name, year)
 
     count = 0
     for reading in monthly_data:
         count = 1 + count
-        print(count, ' ', end='')
+        print('%02d' % count, ' ', end='')
         if reading.max_temp.isdigit():
             current_value = int(reading.max_temp)
         if reading.min_temp.isdigit():
             min_value = int(reading.min_temp)
 
-            print(colored("+" *current_value), ' ', end='')
+            print(colored("+" *current_value, 'red'), ' ', end='')
             print("{}C ".format(current_value))
-            print(count, ' ', end='')
-            print(colored("+" * min_value), ' ', end='')
+            print('%02d' % count, ' ', end='')
+            print(colored("+" * min_value, 'blue'), ' ', end='')
             print("{}C ".format(min_value))
 
         else:
@@ -193,7 +196,6 @@ def print_bar_chart(year, month):
 
     return current_value
     return min_temp
-
 
 def main():
     # print_yearly_output(2004)
@@ -212,14 +214,14 @@ def main():
             print('Date format is not valid')
         else:
             print_yearly_output(datetime_object.year)
-    elif args.monthly:
+    if args.monthly:
         try:
             datetime_object = datetime.datetime.strptime(args.monthly, "%Y/%m")
         except ValueError:
             print('Date format is not valid')
         else:
             print_monthly_output(datetime_object.year, datetime_object.month)
-    elif args.barchart:
+    if args.barchart:
         try:
             datetime_object = datetime.datetime.strptime(args.barchart, "%Y/%m")
         except ValueError:
