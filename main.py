@@ -174,6 +174,7 @@ def print_bar_chart(year, month):
     monthly_data = file_handler.get_monthly_data(year, month)
     datetime_obj = datetime.datetime.strptime(str(month), "%m")
     month_name = datetime_obj.strftime("%B")
+
     print(month_name, year)
 
     count = 0
@@ -185,17 +186,23 @@ def print_bar_chart(year, month):
         if reading.min_temp.isdigit():
             min_value = int(reading.min_temp)
 
-            print(colored("+" *current_value, 'red'), ' ', end='')
-            print("{}C ".format(current_value))
-            print('%02d' % count, ' ', end='')
-            print(colored("+" * min_value, 'blue'), ' ', end='')
-            print("{}C ".format(min_value))
+            # print(colored("+" *current_value, 'red'), ' ', end='')
+            # print("{}C ".format(current_value))
+            # print('%02d' % count, ' ', end='')
+            # print(colored("+" * min_value, 'blue'), ' ', end='')
+            # print("{}C ".format(min_value))
+
+            # BOUNUS TASK
+            print(colored("+" * min_value, 'blue'), end='')
+            print(colored("+" * current_value, 'red'), ' ', end='')
+            print("{}C-{}C ".format(min_value, current_value))
 
         else:
             print('')
 
     return current_value
     return min_temp
+
 
 def main():
     # print_yearly_output(2004)
@@ -205,7 +212,6 @@ def main():
     parser.add_argument('-a', '--monthly', type=str, help='Monthly format')
     parser.add_argument('-c', '--barchart', type=str, help='Bar format')
     args = parser.parse_args()
-
 
     if args.yearly:
         try:
@@ -228,7 +234,6 @@ def main():
             print('Date format is not valid')
         else:
             print_bar_chart(datetime_object.year, datetime_object.month)
-
 
 
 if __name__ == '__main__':
