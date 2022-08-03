@@ -186,16 +186,16 @@ def print_bar_chart(year, month):
         if reading.min_temp.isdigit():
             min_value = int(reading.min_temp)
 
-            # print(colored("+" *current_value, 'red'), ' ', end='')
-            # print("{}C ".format(current_value))
-            # print('%02d' % count, ' ', end='')
-            # print(colored("+" * min_value, 'blue'), ' ', end='')
-            # print("{}C ".format(min_value))
+            print(colored("+" *current_value, 'red'), ' ', end='')
+            print("{}C ".format(current_value))
+            print('%02d' % count, ' ', end='')
+            print(colored("+" * min_value, 'blue'), ' ', end='')
+            print("{}C ".format(min_value))
 
             # BOUNUS TASK
-            print(colored("+" * min_value, 'blue'), end='')
-            print(colored("+" * current_value, 'red'), ' ', end='')
-            print("{}C-{}C ".format(min_value, current_value))
+            # print(colored("+" * min_value, 'blue'), end='')
+            # print(colored("+" * current_value, 'red'), ' ', end='')
+            # print("{}C-{}C ".format(min_value, current_value))
 
         else:
             print('')
