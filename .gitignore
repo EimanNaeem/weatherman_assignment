@@ -1,2 +1,6 @@
 .idea
 venv
+Lib/
+Scripts/
+pyvenv.cfg
+virtualenviornment/
